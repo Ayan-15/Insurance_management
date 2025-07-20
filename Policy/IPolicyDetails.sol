@@ -14,4 +14,5 @@ interface IPolicyDetails {
             uint256,
             address
         );
+        function getCoverage() external pure returns (uint256);
 }

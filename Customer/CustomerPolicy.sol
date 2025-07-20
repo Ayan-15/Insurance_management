@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+//import "@openzeppelin/contracts/utils/Address.sol";
 import "./../Insurer/InsurerManager.sol";
 import "./../Policy/IPolicy.sol";
+import "./../Policy/IPolicyDetails.sol";
 import "./../Policy/ClaimTypes.sol";
 
 contract CustomerManager {
@@ -12,6 +14,16 @@ contract CustomerManager {
         string policyId, // policy id of the policyholder
         uint256 amount, // amount paid as preminum
         uint256 timestamp // time of payment
+    );
+
+    event CustomerPolicyRegistered(
+        address indexed customer,
+        string homeAddress,
+        string policyId,
+        uint256 premiumAmount,
+        uint256 coverageAmount,
+        uint256 startDate,
+        uint256 duration
     );
     event ClaimSubmitted(
         uint256 claimId,
@@ -39,37 +51,74 @@ contract CustomerManager {
 
     //InsurerManager public insurerManager;
 
-    // Not needed as of now. But if it is needed to connect the InsurerManager.sol with this 
-    // code CustomerPolicy.sol then constructor will be needed. Payable is mentioned because 
-    // one function in InsurerManager.sol has a payable function.   
+    // Not needed as of now. But if it is needed to connect the InsurerManager.sol with this
+    // code CustomerPolicy.sol then constructor will be needed. Payable is mentioned because
+    // one function in InsurerManager.sol has a payable function.
     /** constructor(address payable insurerManagerAddress) {   // not needed as of now. 
     //    insurerManager = InsurerManager(insurerManagerAddress);
     //} */
     InsurerManager public insurerManager;
 
+    /** constructor(address payable insurerManagerAddress) {
+        insurerManager = InsurerManager(insurerManagerAddress);
+    }*/
+
+    /**function setInsurerManager(address payable newAddress) external onlyOwner {
+        insurerManager = InsurerManager(newAddress);
+    }*/
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
+    }
+
     function registerCustomerPolicy(
-        address customer,
+        //address customer,
         string memory homeAddr,
         string memory ssn,
-        string memory policyId,
-        uint256 premiumAmount,
-        uint256 coverageAmount,
-        uint256 duration
+        //string memory policyId,
+        address policyContractAddr //uint256 premiumAmount, //uint256 coverageAmount, //uint256 duration
     ) public {
+        require(isContract(policyContractAddr), "Invalid contract address");
+        (
+            ,
+            string memory policyId,
+            ,
+            uint256 policyDuration,
+            uint256 policyPremium,
+            ,
+
+        ) = IPolicyDetails(policyContractAddr).get_policy_details();
+
         bytes32 ssnHash = keccak256(abi.encodePacked(ssn));
+
         PolicyHolder memory newHolder = PolicyHolder({
-            walletAddress: customer,
+            walletAddress: msg.sender,
             ssnHash: ssnHash,
             homeAddress: homeAddr,
             policyId: policyId,
-            premiumAmount: premiumAmount,
-            coverageAmount: coverageAmount,
+            premiumAmount: policyPremium,
+            coverageAmount: 0,
             premiumPaid: 0,
             startDate: block.timestamp,
-            duration: duration,
+            duration: policyDuration,
             isActive: true
         });
-        customerPolicies[customer].push(newHolder);
+        customerPolicies[msg.sender].push(newHolder);
+        policyContracts[policyId] = policyContractAddr;
+
+        emit CustomerPolicyRegistered(
+            msg.sender,
+            homeAddr,
+            policyId,
+            policyPremium,
+            0, // coverageAmount = 0
+            block.timestamp,
+            policyDuration
+        );
     }
 
     function payPremium(uint256 index) public payable {
@@ -107,7 +156,7 @@ contract CustomerManager {
     }
 
     // Submit a claim for a policy
-    function submitClaim(
+    /* function submitClaim(
         string memory policyId,
         uint256 claimAmount,
         string calldata reason
@@ -117,13 +166,14 @@ contract CustomerManager {
         require(policyAddress != address(0), "Invalid policy ID");
 
         IPolicy policy = IPolicy(policyAddress);
+        IPolicyDetails ipolicydetails = IPolicyDetails(policyAddress);
 
         // Validate ownership and policy status
         require(policy.isActive(msg.sender), "Policy not active or expired");
 
         // Check claim amount <= coverage limit
         require(
-            claimAmount <= policy.getCoverage(),
+            claimAmount <= ipolicydetails.getCoverage(),
             "Claim amount exceeds coverage"
         );
 
@@ -140,11 +190,14 @@ contract CustomerManager {
             })
         );
 
+        // Forward to InsurerManager
+        insurerManager.addClaim(msg.sender, policyId, claimAmount, reason);
+
         emit ClaimSubmitted(nextClaimId, msg.sender, policyId, claimAmount);
         nextClaimId++;
-    }
+    }**/
 
-    function getClaimStatus(address claimant, uint256 claimIndex)
+    /*function getClaimStatus(address claimant, uint256 claimIndex)
         public
         view
         returns (string memory)
@@ -159,7 +212,7 @@ contract CustomerManager {
         } else {
             return "Pending";
         }
-    }
+    }*/
 
     function getPolicies(address customer)
         public

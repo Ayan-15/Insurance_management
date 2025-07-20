@@ -63,7 +63,8 @@ contract InsurerManager is Ownable {
         policyContracts[policyId] = policyAddress;
 
         IPolicyInsurer policy = IPolicyInsurer(policyAddress);
-        (string memory insurerName, string memory domain) = policy.get_insurer_info();
+        (string memory insurerName, string memory domain) = policy
+            .get_insurer_info();
         emit PolicyRegistered(policyId, policyAddress, insurerName, domain);
     }
 
@@ -91,6 +92,43 @@ contract InsurerManager is Ownable {
         c.paid = true;
         payable(c.claimant).transfer(c.claimAmount);
         emit ClaimPaid(c.claimId, c.claimant, c.claimAmount);
+    }
+
+    function addClaim(
+        address claimant,
+        string memory policyId,
+        uint256 claimAmount,
+        string memory reason
+    ) external onlyOwner{
+        claims[claimant].push(
+            ClaimTypes.Claim({
+                claimId: nextClaimId++,
+                policyId: policyId,
+                claimant: claimant,
+                claimAmount: claimAmount,
+                reason: reason,
+                approved: false,
+                paid: false,
+                timestamp: block.timestamp
+            })
+        );
+    }
+
+    function getClaimStatus(address claimant, uint256 claimIndex)
+        public
+        view
+        returns (string memory)
+    {
+        require(claimIndex < claims[claimant].length, "Invalid claim index");
+        ClaimTypes.Claim storage claim = claims[claimant][claimIndex];
+
+        if (claim.paid) {
+            return "Paid";
+        } else if (claim.approved) {
+            return "Approved";
+        } else {
+            return "Pending";
+        }
     }
 
     // View claims of a claimant

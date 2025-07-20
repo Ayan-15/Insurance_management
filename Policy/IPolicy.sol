@@ -8,6 +8,6 @@ interface IPolicy {
 
     //function walletAddress() external view returns (address);
 
-    function getCoverage() external view returns (uint256);
+    //function getCoverage() external view returns (uint256);
 
 }
