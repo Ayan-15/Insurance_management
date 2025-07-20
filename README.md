@@ -24,20 +24,21 @@ The **`CustomerManager`** contract is mainly for customer who wil purchase the p
 company and particular policy product.
 
 # Folder Structure
-Insurance_SL
-├── Abstract_Contracts
-│   └── AbstractContracts.sol
-├── Customer
-│   └── CustomerPolicy.sol
-├── Implementations
-│   └── DriveSafe
-│       ├── DriveSafe.sol
-│       └── DriveSafePolicy.sol
-├── Insurer
-│   └── InsurerManager.sol
-├── Policy
-│   ├── ClaimTypes.sol
-│   ├── IPolicy.sol
-│   ├── IPolicyDetails.sol
-│   └── IPolicyInsurer.sol
-
+```
+└── 📁Insurance_SL
+    └── 📁Abstract_Contracts
+        ├── AbstractContracts.sol
+    └── 📁Customer
+        ├── CustomerPolicy.sol
+    └── 📁Implementations
+        └── 📁DriveSafe
+            ├── DriveSafe.sol
+            ├── DriveSafePolicy.sol
+    └── 📁Insurer
+        ├── InsurerManager.sol
+    └── 📁Policy
+        ├── ClaimTypes.sol
+        ├── IPolicy.sol
+        ├── IPolicyDetails.sol
+        ├── IPolicyInsurer.sol
+```
