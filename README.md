@@ -5,7 +5,7 @@ This project involves the development of a smart contract-based insurance system
 Customer Level.
 2. The Customer Manager and Insurer Manager can access the insurance company's product offerings using interfaces (not directly).
 3. An example :
-- DriveSafe is the company (a hypothetical example) which is the Insurer works on Vehicle domain (look at the enum list - 'Abstract_Contracts\AbstractContracts.sol')
+- DriveSafe is the company (a hypothetical example) which is the Insurer works on Vehicle domain (look at the enum list - `Abstract_Contracts\AbstractContracts.sol`)
 - It offers a plan called "Premium_All_Benefit_Plan".
 - The policy ID is "DS
 _
