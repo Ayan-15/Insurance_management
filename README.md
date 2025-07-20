@@ -24,12 +24,18 @@ The **`CustomerManager`** contract is mainly for customer who wil purchase the p
 company and particular policy product.
 
 # Folder Structure
+
+Check the UML diagram in Documentation folder (**`Complete_UML_diagram_Insurance_SL_solidity.pdf`** and **`Insurance_SL_Solidity_Writeup.pdf`**) 
+
 ```
 └── 📁Insurance_SL
     └── 📁Abstract_Contracts
         ├── AbstractContracts.sol
     └── 📁Customer
         ├── CustomerPolicy.sol
+    └── 📁Documentation
+        ├── Complete_UML_diagram_Insurance_SL_solidity.pdf
+        ├── Insurance_SL_Solidity_Writeup.pdf
     └── 📁Implementations
         └── 📁DriveSafe
             ├── DriveSafe.sol
